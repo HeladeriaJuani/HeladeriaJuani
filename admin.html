@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel Heladería Juani</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#15110E">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+<style>
+/* Panel: se usa desde el celular detrás del mostrador. Lo urgente (pedidos por confirmar) arriba. */
+.wrap { max-width: 880px; }
+header.top { padding: 12px 0; }
+.cab-panel { display: flex; align-items: center; gap: 12px; }
+.cab-panel img { width: 52px; height: 52px; flex: none; }
+.cab-panel .t { flex: 1; min-width: 0; }
+.cab-panel .t strong { display: block; font-family: var(--font-display); font-weight: 400; font-size: 1.35rem; line-height: 1; }
+.cab-panel .t span { color: var(--marca-muted); font-size: .85rem; overflow-wrap: anywhere; }
+.cab-panel .btn { padding: 8px 10px; background: transparent; color: var(--marca-ink); border: 1px solid rgba(255, 255, 255, .3); }
+
+.prueba { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, #F0B429 18%, var(--surface)); border: 1px solid color-mix(in srgb, #F0B429 55%, var(--line)); font-size: .92rem; }
+.prueba strong { display: block; }
+
+.tarjeta { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+.vista { padding-top: 18px; padding-bottom: 64px; display: grid; gap: 16px; }
+.vista h2 { font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
+.vista h3 { font-size: 1rem; }
+.acciones-arriba { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Login */
+.login { max-width: 420px; margin: 28px auto; display: grid; gap: 14px; }
+.login h1 { font-size: 1.4rem; }
+
+/* Pestañas */
+.tabs { position: sticky; top: 0; z-index: 6; background: var(--bg); border-bottom: 1px solid var(--line); }
+.tabs .wrap { display: grid; grid-template-columns: repeat(4, 1fr); }
+.tabs button { background: none; border: 0; border-bottom: 3px solid transparent; padding: 13px 4px 10px; font-weight: 600; font-size: .95rem; color: var(--muted); cursor: pointer; display: inline-flex; justify-content: center; align-items: center; gap: 6px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.cuenta-n { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: .78rem; display: inline-grid; place-items: center; font-variant-numeric: tabular-nums; }
+
+/* Pedidos */
+.lista-pedidos { display: grid; gap: 10px; }
+.ped { background: var(--surface); border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: 14px; padding: 12px 14px; display: grid; gap: 8px; }
+.ped.nuevo { border-left-color: #F0B429; }
+.ped.entregado { border-left-color: var(--ok); }
+.ped.cancelado { border-left-color: var(--muted); opacity: .75; }
+.ped .cab { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: .9rem; }
+.ped .cod { font-weight: 700; font-size: 1rem; letter-spacing: .03em; }
+.ped .hora { color: var(--muted); font-variant-numeric: tabular-nums; }
+.pill { padding: 2px 9px; border-radius: 999px; font-size: .78rem; font-weight: 700; border: 1px solid var(--line); }
+.pill.nuevo { background: color-mix(in srgb, #F0B429 22%, var(--surface)); border-color: color-mix(in srgb, #F0B429 60%, var(--line)); }
+.pill.entregado { background: color-mix(in srgb, var(--ok) 16%, var(--surface)); border-color: color-mix(in srgb, var(--ok) 50%, var(--line)); }
+.ped .its { margin: 0; padding-left: 18px; display: grid; gap: 2px; font-size: .95rem; }
+.ped .pie { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.ped .tot { font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.ped .pago { color: var(--muted); font-size: .9rem; flex: 1; }
+.ped .botones { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn.ok { background: var(--ok); color: #fff; }
+.vacio { color: var(--muted); font-size: .95rem; }
+
+/* Venta del mostrador */
+.rapidos { display: flex; flex-wrap: wrap; gap: 8px; }
+.rapidos button { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); cursor: pointer; text-align: left; display: grid; }
+.rapidos button strong { font-size: .95rem; }
+.rapidos button span { font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.lineas { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.lineas li { display: flex; align-items: center; gap: 10px; }
+.lineas .n { flex: 1; }
+.lineas .st { font-weight: 700; font-variant-numeric: tabular-nums; }
+.stepper { display: inline-flex; align-items: center; gap: 4px; }
+.stepper button { width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); cursor: pointer; font-weight: 700; }
+.stepper output { min-width: 20px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fila { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
+.fila .campo { flex: 1 1 160px; }
+.total-venta { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; border-top: 1px dashed var(--line); padding-top: 10px; font-variant-numeric: tabular-nums; }
+
+/* Ventas */
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 2px; }
+.tile span { color: var(--muted); font-size: .82rem; font-weight: 600; line-height: 1.2; }
+.tile strong { font-size: clamp(1.05rem, 4.2vw, 1.45rem); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.tile.grande { grid-column: 1 / -1; }
+.tile.grande strong { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.2rem, 9vw, 3.2rem); line-height: 1.05; }
+.desglose { display: grid; gap: 6px; font-variant-numeric: tabular-nums; }
+.desglose div { display: flex; justify-content: space-between; gap: 10px; }
+.desglose span:last-child { font-weight: 700; }
+.grafico { display: grid; gap: 6px; }
+.barras { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; height: 150px; align-items: end; border-bottom: 1px solid var(--line); }
+.bar { position: relative; height: 100%; display: flex; align-items: end; outline: none; }
+.bar i { display: block; width: 100%; background: var(--ink); border-radius: 4px 4px 0 0; min-height: 0; }
+.bar.hoy i { background: var(--accent); }
+.bar:hover i, .bar:focus-visible i { opacity: .8; }
+.bar .tip { display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--ink); color: var(--bg); padding: 5px 9px; border-radius: 8px; font-size: .82rem; font-weight: 600; z-index: 3; pointer-events: none; }
+.bar:hover .tip, .bar:focus-visible .tip { display: block; }
+.bar:first-child .tip { left: 0; transform: none; }
+.bar:last-child .tip { left: auto; right: 0; transform: none; }
+.etiquetas { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; font-size: .75rem; color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+.etiquetas .hoy { color: var(--ink); font-weight: 700; }
+.ranking { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ranking li { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; font-size: .95rem; }
+.ranking .linea { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--bg); overflow: hidden; }
+.ranking .linea i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+
+/* Productos */
+.cat-bloque { display: grid; gap: 6px; }
+.cat-bloque h3 { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
+.cat-bloque h3 small { font-weight: 500; color: var(--muted); font-size: .82rem; }
+.fila-prod { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 9px 10px 9px 12px; }
+.fila-prod .muestra { width: 26px; height: 26px; border-radius: 50% 50% 6px 6px; background: var(--c); flex: none; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12); }
+.fila-prod .info { flex: 1; min-width: 0; }
+.fila-prod .info strong { display: block; overflow-wrap: anywhere; }
+.fila-prod .info span { color: var(--muted); font-size: .86rem; font-variant-numeric: tabular-nums; }
+.fila-prod.sin .info { opacity: .55; }
+.switch { position: relative; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: .82rem; font-weight: 700; min-width: 92px; }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch .riel { width: 40px; height: 24px; border-radius: 999px; background: var(--line); position: relative; flex: none; transition: background .15s; }
+.switch .riel::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, .3); transition: transform .15s; }
+.switch input:checked + .riel { background: var(--ok); }
+.switch input:checked + .riel::after { transform: translateX(16px); }
+.switch input:focus-visible + .riel { outline: 3px solid var(--accent); outline-offset: 2px; }
+.color-fila { display: flex; gap: 10px; align-items: center; }
+.color-fila input[type="color"] { width: 52px; height: 42px; padding: 2px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.check { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.check input { width: 20px; height: 20px; }
+.botonera { display: flex; flex-wrap: wrap; gap: 8px; }
+.botonera .borrar { margin-left: auto; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap cab-panel">
+    <img src="logo.webp" alt="" width="52" height="52">
+    <div class="t"><strong>Panel</strong><span id="cab-usuario">Heladería Juani</span></div>
+    <a class="btn chico" href="index.html" id="ver-tienda">Ver tienda</a>
+    <button type="button" class="btn chico" id="btn-salir" hidden>Salir</button>
+  </div>
+</header>
+
+<div class="wrap" id="aviso-prueba" hidden>
+  <div class="prueba"><strong>Modo prueba</strong>Todavía no conectaste Firebase: lo que hagas acá se guarda solo en este navegador. Para usarlo de verdad, seguí la guía (README).</div>
+</div>
+
+<p class="wrap vacio" id="cargando" style="padding-top:24px">Cargando…</p>
+
+<!-- Error de conexión -->
+<section class="wrap login" id="v-error" hidden>
+  <div class="tarjeta"><h1>No se pudo conectar</h1><p class="nota" id="error-txt">Revisá la conexión a internet y los datos de Firebase en datos.js.</p></div>
+</section>
+
+<!-- Login -->
+<section class="wrap login" id="v-login" hidden>
+  <form class="tarjeta form" id="f-login" novalidate>
+    <h1>Entrar al panel</h1>
+    <p class="nota" id="login-ayuda"></p>
+    <div class="campo"><label for="l-email">Mail</label><input id="l-email" type="email" autocomplete="username" required></div>
+    <div class="campo"><label for="l-clave">Contraseña</label><input id="l-clave" type="password" autocomplete="current-password" required></div>
+    <ul class="errores" id="login-err" role="alert"></ul>
+    <button class="btn grande" type="submit" id="btn-entrar">Entrar</button>
+  </form>
+</section>
+
+<!-- Cuenta sin permiso -->
+<section class="wrap login" id="v-sinpermiso" hidden>
+  <div class="tarjeta form">
+    <h1>Esta cuenta no es administradora</h1>
+    <p>Para darle permiso, agregá este UID a la lista ADMINS de datos.js y a firestore.rules, o en Firebase andá a Firestore → colección <strong>admins</strong> y creá un documento con este ID:</p>
+    <p class="alias"><code id="mi-uid"></code></p>
+    <p class="nota">Después volvé a cargar esta página.</p>
+    <button type="button" class="btn suave" id="btn-salir2">Salir</button>
+  </div>
+</section>
+
+<!-- Panel -->
+<div id="v-panel" hidden>
+  <nav class="tabs" aria-label="Secciones del panel">
+    <div class="wrap" role="tablist">
+      <button type="button" role="tab" id="tab-pedidos" aria-controls="v-pedidos" data-vista="pedidos">Pedidos <span class="cuenta-n" id="tab-n" hidden></span></button>
+      <button type="button" role="tab" id="tab-ventas" aria-controls="v-ventas" data-vista="ventas">Ventas</button>
+      <button type="button" role="tab" id="tab-productos" aria-controls="v-productos" data-vista="productos">Productos</button>
+      <button type="button" role="tab" id="tab-ajustes" aria-controls="v-ajustes" data-vista="ajustes">Ajustes</button>
+    </div>
+  </nav>
+
+  <!-- PEDIDOS -->
+  <section class="wrap vista" id="v-pedidos" role="tabpanel" aria-labelledby="tab-pedidos">
+    <div class="acciones-arriba"><button type="button" class="btn" id="btn-mostrador">+ Venta del mostrador</button></div>
+
+    <div class="tarjeta form" id="mostrador" hidden>
+      <h2>Venta del mostrador</h2>
+      <p class="nota">Tocá lo que vendiste. Si no está, sumalo con “Otro monto”.</p>
+      <div class="rapidos" id="rapidos"></div>
+      <ul class="lineas" id="lineas"></ul>
+      <div class="fila">
+        <div class="campo"><label for="m-otro">Otro monto</label><input id="m-otro" inputmode="numeric" placeholder="Ej.: 3500"></div>
+        <button type="button" class="btn suave" id="m-sumar">Sumar</button>
+      </div>
+      <fieldset class="campo">
+        <legend>Forma de pago</legend>
+        <div class="segmento" id="m-pagos"></div>
+      </fieldset>
+      <div class="total-venta"><span>Total</span><span id="m-total">$ 0</span></div>
+      <ul class="errores" id="m-err" role="alert"></ul>
+      <div class="botonera">
+        <button type="button" class="btn ok" id="m-guardar">Guardar venta</button>
+        <button type="button" class="btn suave" id="m-cancelar">Cancelar</button>
+      </div>
+    </div>
+
+    <h2>Por confirmar <span class="cuenta-n" id="n-nuevos" hidden></span></h2>
+    <p class="nota">Los pedidos de la página entran acá. Marcalos como entregados cuando se cobran, así se suman a las ventas.</p>
+    <div class="lista-pedidos" id="lista-nuevos"></div>
+
+    <h2>Hoy</h2>
+    <p class="nota num-tab" id="resumen-hoy"></p>
+    <div class="lista-pedidos" id="lista-hoy"></div>
+  </section>
+
+  <!-- VENTAS -->
+  <section class="wrap vista" id="v-ventas" role="tabpanel" aria-labelledby="tab-ventas" hidden>
+    <div class="segmento" id="periodos" role="radiogroup" aria-label="Período">
+      <label><input type="radio" name="periodo" value="hoy" checked><span>Hoy</span></label>
+      <label><input type="radio" name="periodo" value="semana"><span>Esta semana</span></label>
+      <label><input type="radio" name="periodo" value="mes"><span>Este mes</span></label>
+    </div>
+    <div class="tiles" id="tiles"></div>
+    <div class="tarjeta desglose" id="desglose"></div>
+    <div class="tarjeta grafico" id="grafico"></div>
+    <div class="tarjeta" id="top-gustos"></div>
+    <p class="nota">Es lo vendido, no la ganancia: no descuenta costos ni gastos. Suma los pedidos de la página marcados como entregados y las ventas del mostrador. Las propinas van aparte.</p>
+  </section>
+
+  <!-- PRODUCTOS -->
+  <section class="wrap vista" id="v-productos" role="tabpanel" aria-labelledby="tab-productos" hidden>
+    <div class="tarjeta form" id="sin-menu" hidden>
+      <h2>Falta cargar el menú</h2>
+      <p>La base de datos todavía está vacía. La tienda muestra el menú que viene en el archivo. Cargalo una vez para poder cambiar precios y stock desde acá.</p>
+      <button type="button" class="btn" id="btn-cargar-menu">Cargar el menú de la heladería</button>
+    </div>
+    <div class="acciones-arriba"><button type="button" class="btn" id="btn-nuevo">+ Agregar producto</button></div>
+
+    <form class="tarjeta form" id="f-prod" novalidate hidden>
+      <h2 id="fp-titulo">Nuevo producto</h2>
+      <div class="campo"><label for="fp-nombre">Nombre</label><input id="fp-nombre" maxlength="60" placeholder="Ej.: Dulce de leche con nuez"></div>
+      <div class="campo"><label for="fp-cat">Categoría</label><select id="fp-cat"></select></div>
+      <div class="tarjeta form" id="fp-nueva" hidden>
+        <div class="campo"><label for="fp-cat-nombre">Nombre de la categoría nueva</label><input id="fp-cat-nombre" maxlength="40" placeholder="Ej.: Postres"></div>
+        <fieldset class="campo">
+          <legend>¿Qué tipo de categoría es?</legend>
+          <label class="check"><input type="radio" name="fp-tipo" value="productos" checked> Productos con precio (postres, cucuruchos…)</label>
+          <label class="check"><input type="radio" name="fp-tipo" value="gustos"> Gustos de helado (sin precio)</label>
+          <label class="check"><input type="radio" name="fp-tipo" value="potes"> Potes (tamaños)</label>
+        </fieldset>
+      </div>
+      <div class="campo" id="fp-c-precio"><label for="fp-precio">Precio</label><input id="fp-precio" inputmode="numeric" placeholder="Ej.: 3500"></div>
+      <div class="campo" id="fp-c-gustos"><label for="fp-gustos">¿Cuántos gustos entran?</label><input id="fp-gustos" inputmode="numeric" placeholder="Ej.: 3"></div>
+      <div class="campo" id="fp-c-detalle"><label for="fp-detalle">Aclaración (opcional)</label><input id="fp-detalle" maxlength="40" placeholder="Ej.: Por unidad, Porción"></div>
+      <div class="campo" id="fp-c-color">
+        <label for="fp-color">Color del helado en la vitrina</label>
+        <div class="color-fila">
+          <input type="color" id="fp-color" value="#F1DFB8">
+          <select id="fp-textura" aria-label="Textura">
+            <option value="">Liso</option>
+            <option value="granizado">Con puntitos (granizado)</option>
+            <option value="trozos">Con trozos</option>
+          </select>
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" id="fp-hay" checked> Hay stock</label>
+      <ul class="errores" id="fp-err" role="alert"></ul>
+      <div class="botonera">
+        <button type="submit" class="btn" id="fp-guardar">Guardar</button>
+        <button type="button" class="btn suave" id="fp-cancelar">Cancelar</button>
+        <button type="button" class="btn suave borrar" id="fp-borrar" hidden>Borrar</button>
+      </div>
+    </form>
+
+    <div id="lista-prod" class="cat-bloque"></div>
+  </section>
+
+  <!-- AJUSTES -->
+  <section class="wrap vista" id="v-ajustes" role="tabpanel" aria-labelledby="tab-ajustes" hidden>
+    <form class="tarjeta form" id="f-ajustes" novalidate>
+      <h2>Transferencias</h2>
+      <p class="nota">Si cargás el alias, la tienda se lo muestra a quien elige pagar por transferencia.</p>
+      <div class="campo"><label for="a-alias">Alias o CBU</label><input id="a-alias" maxlength="40" placeholder="Ej.: heladeria.juani"></div>
+      <div class="campo"><label for="a-titular">A nombre de</label><input id="a-titular" maxlength="60" placeholder="Ej.: Juan Pérez"></div>
+      <h2>Pedidos por la página</h2>
+      <label class="switch"><input type="checkbox" id="a-pausado"><span class="riel"></span><span>Pausar pedidos</span></label>
+      <div class="campo"><label for="a-mensaje">Mensaje para los clientes mientras está en pausa</label><input id="a-mensaje" maxlength="140" placeholder="Ej.: Hoy no hacemos envíos por la lluvia."></div>
+      <div class="botonera"><button type="submit" class="btn">Guardar ajustes</button></div>
+    </form>
+    <div class="tarjeta form">
+      <h2>Otros datos</h2>
+      <p class="nota">Horarios, WhatsApp, dirección, envío y formas de pago se cambian en el archivo <strong>datos.js</strong> en GitHub.</p>
+      <button type="button" class="btn suave" id="btn-reiniciar" hidden>Borrar los datos de prueba</button>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script type="module">
+import {
+  CONFIG, MENU_INICIAL, TIPOS_CATEGORIA, conectar, clonar, fmt, esc, soloNumero, slug, nuevoId,
+  claveDia, sumarDias, diaSemana, horaAR, sumarDeltas, colorTextura
+} from "./datos.js";
+
+const $ = (id) => document.getElementById(id);
+let api = null;
+let sesion = null;
+let menu = null;            // lo que hay en la base (o el inicial si está vacía)
+let menuEnBase = false;
+let pedidos = [];
+let cortarPedidos = null;
+let diaEscuchado = null;
+let vista = "pedidos";
+let periodo = "hoy";
+let resumen = [];
+
+/* ---------- Utilidades de pantalla ---------- */
+let tToast = null;
+function toast(txt) {
+  const t = $("toast");
+  t.textContent = txt; t.hidden = false;
+  clearTimeout(tToast); tToast = setTimeout(() => { t.hidden = true; }, 2600);
+}
+function mostrar(id) {
+  ["cargando", "v-error", "v-login", "v-sinpermiso", "v-panel"].forEach((x) => { $(x).hidden = x !== id; });
+}
+/** Botón que pide un segundo toque para confirmar (en lugar de confirm()) */
+function dobleToque(btn, textoConfirmar) {
+  if (btn.dataset.armado === "1") { btn.dataset.armado = ""; return true; }
+  const original = btn.textContent;
+  btn.dataset.armado = "1"; btn.textContent = textoConfirmar;
+  setTimeout(() => { if (btn.dataset.armado === "1") { btn.dataset.armado = ""; btn.textContent = original; } }, 3500);
+  return false;
+}
+const catDe = (id) => menu.categorias.find((c) => c.id === id);
+const tipoDe = (p) => (catDe(p.categoria) || {}).tipo;
+
+/* ---------- Sesión ---------- */
+async function arrancar() {
+  api = await conectar();
+  if (api.modo === "error") {
+    $("error-txt").textContent = "No se pudo conectar con Firebase. Revisá la conexión a internet y los datos de firebaseConfig en datos.js.";
+    return mostrar("v-error");
+  }
+  $("aviso-prueba").hidden = api.modo !== "prueba";
+  $("btn-reiniciar").hidden = api.modo !== "prueba";
+  $("login-ayuda").textContent = api.modo === "prueba"
+    ? "Modo prueba: entrá con cualquier mail y contraseña."
+    : "Usá el mail y la contraseña que creaste en Firebase.";
+  try { await api.iniciarAuth(); }
+  catch (e) { $("error-txt").textContent = "No se pudo cargar el inicio de sesión. Revisá la conexión."; return mostrar("v-error"); }
+  api.alCambiarSesion(alCambiarSesion);
+}
+
+async function alCambiarSesion(s) {
+  sesion = s;
+  if (cortarPedidos) { cortarPedidos(); cortarPedidos = null; }
+  $("btn-salir").hidden = !s;
+  $("cab-usuario").textContent = s ? s.email : CONFIG.nombre;
+  if (!s) { mostrar("v-login"); return; }
+  if (!s.admin) { $("mi-uid").textContent = s.uid; mostrar("v-sinpermiso"); return; }
+  mostrar("cargando");
+  try {
+    const m = await api.leerMenu();
+    menuEnBase = !!m;
+    menu = m || clonar(MENU_INICIAL);
+  } catch (e) {
+    console.error(e);
+    $("error-txt").textContent = "No se pudo leer el menú. Si recién creaste la base, revisá que hayas publicado las reglas.";
+    return mostrar("v-error");
+  }
+  mostrar("v-panel");
+  escucharPedidos();
+  pintarProductos(); pintarAjustes(); pintarMostrador();
+  irA((location.hash || "").replace("#", "") || "pedidos");
+}
+
+$("f-login").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = $("l-email").value.trim(), clave = $("l-clave").value;
+  $("login-err").innerHTML = "";
+  if (api.modo !== "prueba" && (!email || !clave)) { $("login-err").innerHTML = "<li>Completá el mail y la contraseña.</li>"; return; }
+  $("btn-entrar").disabled = true;
+  try { await api.entrar(email, clave); }
+  catch (err) {
+    const c = err && err.code || "";
+    const txt = c.includes("too-many-requests") ? "Demasiados intentos. Esperá unos minutos y probá de nuevo."
+      : c.includes("network") ? "No hay conexión a internet."
+      : "Mail o contraseña incorrectos.";
+    $("login-err").innerHTML = `<li>${esc(txt)}</li>`;
+  } finally { $("btn-entrar").disabled = false; }
+});
+$("btn-salir").addEventListener("click", () => api.salir());
+$("btn-salir2").addEventListener("click", () => api.salir());
+
+/* ---------- Pestañas ---------- */
+const VISTAS = ["pedidos", "ventas", "productos", "ajustes"];
+function irA(v) {
+  if (!VISTAS.includes(v)) v = "pedidos";
+  vista = v;
+  VISTAS.forEach((x) => {
+    $("v-" + x).hidden = x !== v;
+    $("tab-" + x).setAttribute("aria-selected", x === v ? "true" : "false");
+  });
+  try { history.replaceState(null, "", "#" + v); } catch (e) { /* sin historial */ }
+  if (v === "ventas") cargarVentas();
+}
+document.querySelector(".tabs").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-vista]");
+  if (b) irA(b.dataset.vista);
+});
+
+/* =====================================================================
+   PEDIDOS
+   ===================================================================== */
+function escucharPedidos() {
+  if (cortarPedidos) cortarPedidos();
+  diaEscuchado = claveDia();
+  cortarPedidos = api.escucharPedidos((lista, err) => {
+    if (err) { console.error(err); toast("No se pudieron leer los pedidos. Revisá la conexión."); return; }
+    pedidos = lista;
+    pintarPedidos();
+  });
+}
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && sesion && sesion.admin && diaEscuchado && diaEscuchado !== claveDia()) {
+    escucharPedidos();
+    if (vista === "ventas") cargarVentas();
+  }
+});
+
+function tarjetaPedido(p) {
+  const web = p.origen === "web";
+  const its = (p.items || []).map((it) => it.tipo === "pote"
+    ? `<li><strong>${esc(it.nombre)}</strong>: ${esc((it.gustos || []).join(", "))}</li>`
+    : `<li>${it.cantidad} x ${esc(it.nombre)} <span class="nota">(${fmt(it.cantidad * it.precio)})</span></li>`).join("");
+  const quien = web
+    ? `<p><strong>${esc(p.nombre)}</strong> · ${p.entrega === "delivery" ? `Delivery a ${esc(p.direccion)}` : "Retira en el local"}</p>`
+    : "";
+  let pago = esc(p.pago || "");
+  if (p.pago === "Efectivo" && p.pagaCon) pago += ` · paga con ${fmt(p.pagaCon)} (vuelto ${fmt(Math.max(0, p.pagaCon - p.total))})`;
+  if (p.propina) pago += ` · incluye ${fmt(p.propina)} de propina`;
+  let botones = "";
+  if (p.estado === "nuevo") botones = `<button type="button" class="btn ok chico" data-accion="entregado" data-id="${esc(p.id)}">Entregado y cobrado</button>
+      <button type="button" class="btn suave chico" data-accion="cancelado" data-id="${esc(p.id)}">Cancelar</button>`;
+  else if (web) botones = `<button type="button" class="btn suave chico" data-accion="nuevo" data-id="${esc(p.id)}">Deshacer</button>`;
+  else botones = `<button type="button" class="btn suave chico" data-accion="borrar" data-id="${esc(p.id)}">Borrar</button>`;
+  const estados = { nuevo: "Por confirmar", entregado: "Entregado", cancelado: "Cancelado" };
+  return `<article class="ped ${esc(p.estado)}">
+    <div class="cab"><span class="cod">#${esc(p.codigo || "")}</span><span class="hora">${horaAR(p.creadoMs)}${p.dia !== claveDia() ? " · " + esc(p.dia.split("-").reverse().slice(0, 2).join("/")) : ""}</span>
+      <span class="pill">${web ? "Página" : "Mostrador"}</span><span class="pill ${esc(p.estado)}">${estados[p.estado] || esc(p.estado)}</span></div>
+    ${quien}
+    <ul class="its">${its}</ul>
+    ${p.notas ? `<p class="nota">Notas: ${esc(p.notas)}</p>` : ""}
+    <div class="pie"><span class="tot">${fmt(p.total)}</span><span class="pago">${pago}</span><div class="botones">${botones}</div></div>
+  </article>`;
+}
+
+function pintarPedidos() {
+  const hoy = claveDia();
+  const nuevos = pedidos.filter((p) => p.estado === "nuevo");
+  const resto = pedidos.filter((p) => p.estado !== "nuevo" && p.dia === hoy);
+  $("lista-nuevos").innerHTML = nuevos.length ? nuevos.map(tarjetaPedido).join("") : `<p class="vacio">No hay pedidos esperando.</p>`;
+  $("lista-hoy").innerHTML = resto.length ? resto.map(tarjetaPedido).join("") : `<p class="vacio">Todavía no hay ventas hoy.</p>`;
+  const entregados = resto.filter((p) => p.estado === "entregado");
+  const suma = entregados.reduce((a, p) => a + (p.total || 0) - (p.propina || 0), 0);
+  $("resumen-hoy").textContent = entregados.length ? `${entregados.length} ${entregados.length === 1 ? "venta" : "ventas"} · ${fmt(suma)}` : "";
+  $("n-nuevos").hidden = $("tab-n").hidden = !nuevos.length;
+  $("n-nuevos").textContent = $("tab-n").textContent = nuevos.length;
+  document.title = (nuevos.length ? `(${nuevos.length}) ` : "") + "Panel Heladería Juani";
+}
+
+$("v-pedidos").addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-accion]");
+  if (!b) return;
+  const { accion, id } = b.dataset;
+  if (accion === "borrar" && !dobleToque(b, "¿Borrar? Tocá de nuevo")) return;
+  if (accion === "cancelado" && !dobleToque(b, "¿Cancelar? Tocá de nuevo")) return;
+  b.disabled = true;
+  try {
+    if (accion === "borrar") { await api.borrarPedido(id); toast("Venta borrada"); }
+    else {
+      await api.cambiarEstado(id, accion);
+      toast(accion === "entregado" ? "Listo, sumado a las ventas" : accion === "cancelado" ? "Pedido cancelado" : "Pedido vuelto a “Por confirmar”");
+    }
+    if (vista === "ventas") cargarVentas();
+  } catch (err) { console.error(err); toast("No se pudo guardar. Probá de nuevo."); b.disabled = false; }
+});
+
+/* ---------- Venta del mostrador ---------- */
+let venta = { lineas: [], pago: CONFIG.pagos[0] };
+function pintarMostrador() {
+  const conPrecio = menu.productos.filter((p) => ["potes", "productos"].includes(tipoDe(p)));
+  $("rapidos").innerHTML = conPrecio.map((p) => `<button type="button" data-sumar="${esc(p.id)}"><strong>${esc(p.nombre)}</strong><span>${fmt(p.precio)}</span></button>`).join("");
+  $("m-pagos").innerHTML = CONFIG.pagos.map((p) => `<label><input type="radio" name="m-pago" value="${esc(p)}" ${p === venta.pago ? "checked" : ""}><span>${esc(p)}</span></label>`).join("");
+  pintarLineas();
+}
+function pintarLineas() {
+  $("lineas").innerHTML = venta.lineas.map((l, i) => `<li>
+    <span class="n">${esc(l.nombre)}</span>
+    <span class="stepper"><button type="button" data-linea="${i}" data-d="-1" aria-label="Uno menos">−</button><output>${l.cantidad}</output><button type="button" data-linea="${i}" data-d="1" aria-label="Uno más">+</button></span>
+    <span class="st">${fmt(l.cantidad * l.precio)}</span></li>`).join("");
+  $("m-total").textContent = fmt(venta.lineas.reduce((a, l) => a + l.cantidad * l.precio, 0));
+}
+$("btn-mostrador").addEventListener("click", () => {
+  $("mostrador").hidden = !$("mostrador").hidden;
+  if (!$("mostrador").hidden) $("mostrador").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+$("rapidos").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-sumar]");
+  if (!b) return;
+  const p = menu.productos.find((x) => x.id === b.dataset.sumar);
+  const l = venta.lineas.find((x) => x.id === p.id);
+  if (l) l.cantidad++;
+  else venta.lineas.push({ id: p.id, tipo: tipoDe(p) === "potes" ? "pote" : "producto", nombre: p.nombre, precio: Number(p.precio) || 0, cantidad: 1 });
+  $("m-err").innerHTML = "";
+  pintarLineas();
+});
+$("lineas").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-linea]");
+  if (!b) return;
+  const l = venta.lineas[Number(b.dataset.linea)];
+  l.cantidad += Number(b.dataset.d);
+  if (l.cantidad <= 0) venta.lineas.splice(Number(b.dataset.linea), 1);
+  pintarLineas();
+});
+$("m-sumar").addEventListener("click", () => {
+  const monto = soloNumero($("m-otro").value);
+  if (!monto) { $("m-err").innerHTML = "<li>Escribí un monto.</li>"; return; }
+  venta.lineas.push({ id: "otro-" + nuevoId(), tipo: "otro", nombre: "Otro", precio: monto, cantidad: 1 });
+  $("m-otro").value = ""; $("m-err").innerHTML = "";
+  pintarLineas();
+});
+$("m-pagos").addEventListener("change", (e) => { venta.pago = e.target.value; });
+$("m-cancelar").addEventListener("click", () => { venta.lineas = []; $("mostrador").hidden = true; pintarLineas(); });
+$("m-guardar").addEventListener("click", async () => {
+  const total = venta.lineas.reduce((a, l) => a + l.cantidad * l.precio, 0);
+  if (!total) { $("m-err").innerHTML = "<li>Agregá al menos un producto o un monto.</li>"; return; }
+  $("m-guardar").disabled = true;
+  try {
+    await api.crearVentaMostrador({
+      items: venta.lineas.map((l) => ({ tipo: l.tipo, nombre: l.nombre, precio: l.precio, cantidad: l.cantidad, gustos: [] })),
+      subtotal: total, envio: 0, propina: 0, total, pago: venta.pago,
+      entrega: "mostrador", direccion: "", nombre: "Mostrador", notas: "", pagaCon: 0
+    });
+    toast(`Venta guardada: ${fmt(total)}`);
+    venta.lineas = []; $("mostrador").hidden = true; pintarLineas();
+    if (vista === "ventas") cargarVentas();
+  } catch (err) { console.error(err); $("m-err").innerHTML = "<li>No se pudo guardar. Revisá la conexión y probá de nuevo.</li>"; }
+  finally { $("m-guardar").disabled = false; }
+});
+
+/* =====================================================================
+   VENTAS
+   ===================================================================== */
+function rangos() {
+  const hoy = claveDia();
+  const lunes = sumarDias(hoy, -((diaSemana(hoy) + 6) % 7));
+  const primero = hoy.slice(0, 8) + "01";
+  return { hoy, lunes, primero, desde: lunes < primero ? lunes : primero };
+}
+async function cargarVentas() {
+  const r = rangos();
+  try { resumen = await api.leerResumen(r.desde, r.hoy); }
+  catch (e) { console.error(e); toast("No se pudieron leer las ventas."); resumen = []; }
+  pintarVentas();
+}
+$("periodos").addEventListener("change", (e) => { periodo = e.target.value; pintarVentas(); });
+
+function pintarVentas() {
+  const r = rangos();
+  const desde = periodo === "hoy" ? r.hoy : periodo === "semana" ? r.lunes : r.primero;
+  const dias = resumen.filter((d) => d.dia >= desde && d.dia <= r.hoy);
+  const t = dias.reduce((a, d) => sumarDeltas(a, d), {});
+  delete t.dia;
+  const total = t.total || 0, n = t.ventas || 0;
+  const titulo = { hoy: "Vendido hoy", semana: "Vendido esta semana", mes: "Vendido este mes" }[periodo];
+  $("tiles").innerHTML = `
+    <div class="tile grande"><span>${titulo}</span><strong>${fmt(total)}</strong></div>
+    <div class="tile"><span>Ventas</span><strong>${n}</strong></div>
+    <div class="tile"><span>Promedio por venta</span><strong>${fmt(n ? total / n : 0)}</strong></div>
+    <div class="tile"><span>Propinas</span><strong>${fmt(t.propinas || 0)}</strong></div>`;
+  $("desglose").innerHTML = `
+    <div><span>Por la página (${t.ventasWeb || 0})</span><span>${fmt(t.vendidoWeb || 0)}</span></div>
+    <div><span>En el mostrador (${t.ventasMostrador || 0})</span><span>${fmt(t.vendidoMostrador || 0)}</span></div>
+    <div><span>Efectivo</span><span>${fmt(t.efectivo || 0)}</span></div>
+    <div><span>Transferencia</span><span>${fmt(t.transferencia || 0)}</span></div>`;
+  pintarGrafico(r);
+  const top = Object.entries(t.gustos || {}).filter(([, c]) => c > 0).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const max = top.length ? top[0][1] : 1;
+  $("top-gustos").innerHTML = `<h3>Gustos más pedidos por la página</h3>` + (top.length
+    ? `<ol class="ranking" style="margin-top:10px">${top.map(([g, c]) => `<li><span>${esc(g)}</span><span class="num-tab">${c}</span><span class="linea"><i style="width:${Math.round((c / max) * 100)}%"></i></span></li>`).join("")}</ol>`
+    : `<p class="vacio" style="margin-top:6px">Todavía no hay pedidos entregados en este período.</p>`);
+}
+
+function pintarGrafico(r) {
+  if (periodo === "hoy") { $("grafico").hidden = true; return; }
+  $("grafico").hidden = false;
+  const porDia = Object.fromEntries(resumen.map((d) => [d.dia, d.total || 0]));
+  let claves = [], etiquetas = [];
+  const LETRAS = ["D", "L", "M", "M", "J", "V", "S"];
+  const NOMBRES = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+  if (periodo === "semana") {
+    for (let i = 0; i < 7; i++) { const k = sumarDias(r.lunes, i); claves.push(k); etiquetas.push(LETRAS[diaSemana(k)]); }
+  } else {
+    const [y, m] = r.hoy.split("-").map(Number);
+    const ultimo = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    for (let d = 1; d <= ultimo; d++) {
+      const k = `${r.hoy.slice(0, 8)}${String(d).padStart(2, "0")}`;
+      claves.push(k); etiquetas.push(d === 1 || d % 5 === 0 ? String(d) : "");
+    }
+  }
+  const mejor = Math.max(0, ...claves.map((k) => porDia[k] || 0));
+  const max = Math.max(1, mejor);
+  const barras = claves.map((k) => {
+    const v = porDia[k] || 0, futuro = k > r.hoy;
+    const nom = `${NOMBRES[diaSemana(k)]} ${Number(k.slice(8))}`;
+    return `<div class="bar ${k === r.hoy ? "hoy" : ""}" tabindex="0" aria-label="${nom}: ${futuro ? "todavía no llegó" : fmt(v)}">
+      <i style="height:${(v / max) * 100}%"></i><span class="tip">${nom} · ${futuro ? "—" : fmt(v)}</span></div>`;
+  }).join("");
+  $("grafico").innerHTML = `<h3>Vendido por día</h3><p class="nota num-tab">El mejor día: ${fmt(mejor)}</p>
+    <div class="barras">${barras}</div>
+    <div class="etiquetas">${claves.map((k, i) => `<span class="${k === r.hoy ? "hoy" : ""}">${etiquetas[i]}</span>`).join("")}</div>`;
+}
+
+/* =====================================================================
+   PRODUCTOS
+   ===================================================================== */
+const NOMBRE_TIPO = { potes: "Potes", gustos: "Gustos", productos: "Con precio" };
+function pintarProductos() {
+  $("sin-menu").hidden = menuEnBase;
+  $("lista-prod").innerHTML = menu.categorias.map((c) => {
+    const ps = menu.productos.filter((p) => p.categoria === c.id);
+    if (!ps.length) return "";
+    return `<h3>${esc(c.nombre)} <small>${NOMBRE_TIPO[c.tipo] || ""}</small></h3>` + ps.map((p) => {
+      const sub = c.tipo === "gustos" ? "" : c.tipo === "potes" ? `${fmt(p.precio)} · hasta ${p.gustos} gustos` : `${fmt(p.precio)}${p.detalle ? " · " + esc(p.detalle) : ""}`;
+      const hay = p.hay !== false;
+      return `<div class="fila-prod ${hay ? "" : "sin"}">
+        ${c.tipo === "gustos" ? `<span class="muestra" style="--c:${esc(p.color || "#EEE")}"></span>` : ""}
+        <div class="info"><strong>${esc(p.nombre)}</strong>${sub ? `<span>${sub}</span>` : ""}</div>
+        <label class="switch"><input type="checkbox" data-stock="${esc(p.id)}" ${hay ? "checked" : ""} aria-label="Stock de ${esc(p.nombre)}"><span class="riel"></span><span>${hay ? "Hay" : "Sin stock"}</span></label>
+        <button type="button" class="btn suave chico" data-editar="${esc(p.id)}">Editar</button>
+      </div>`;
+    }).join("");
+  }).join("");
+}
+
+async function guardarMenu(mutar, ok) {
+  try {
+    menu = await api.guardarMenu(mutar);
+    menuEnBase = true;
+    pintarProductos(); pintarMostrador(); pintarAjustes();
+    if (ok) toast(ok);
+    return true;
+  } catch (e) {
+    console.error(e);
+    toast("No se pudo guardar. Revisá la conexión y probá de nuevo.");
+    return false;
+  }
+}
+
+$("btn-cargar-menu").addEventListener("click", async (e) => {
+  e.target.disabled = true;
+  await guardarMenu(() => {}, "Menú cargado. Ya podés cambiar precios y stock.");
+  e.target.disabled = false;
+});
+
+$("lista-prod").addEventListener("change", async (e) => {
+  const id = e.target.dataset.stock;
+  if (!id) return;
+  const hay = e.target.checked;
+  const p = menu.productos.find((x) => x.id === id);
+  const okGuardado = await guardarMenu((m) => { const x = m.productos.find((y) => y.id === id); if (x) x.hay = hay; },
+    `${p ? p.nombre : "Producto"}: ${hay ? "hay stock" : "sin stock"}`);
+  if (!okGuardado) e.target.checked = !hay;
+});
+
+/* Formulario de producto */
+let editId = null;
+function opcionesCategorias(seleccion) {
+  const grupos = ["potes", "gustos", "productos"].map((tipo) => {
+    const cs = menu.categorias.filter((c) => c.tipo === tipo);
+    return cs.length ? `<optgroup label="${NOMBRE_TIPO[tipo]}">${cs.map((c) => `<option value="${esc(c.id)}" ${c.id === seleccion ? "selected" : ""}>${esc(c.nombre)}</option>`).join("")}</optgroup>` : "";
+  }).join("");
+  return grupos + `<option value="__nueva" ${seleccion === "__nueva" ? "selected" : ""}>+ Nueva categoría…</option>`;
+}
+function tipoElegido() {
+  const v = $("fp-cat").value;
+  if (v === "__nueva") return document.querySelector("input[name='fp-tipo']:checked").value;
+  return (catDe(v) || {}).tipo || "productos";
+}
+function ajustarCampos() {
+  const tipo = tipoElegido();
+  $("fp-nueva").hidden = $("fp-cat").value !== "__nueva";
+  $("fp-c-precio").hidden = tipo === "gustos";
+  $("fp-c-gustos").hidden = tipo !== "potes";
+  $("fp-c-detalle").hidden = tipo !== "productos";
+  $("fp-c-color").hidden = tipo !== "gustos";
+}
+function abrirForm(p) {
+  editId = p ? p.id : null;
+  $("fp-titulo").textContent = p ? `Editar: ${p.nombre}` : "Nuevo producto";
+  $("fp-nombre").value = p ? p.nombre : "";
+  const primeraConPrecio = (menu.categorias.find((c) => c.tipo === "productos") || menu.categorias[0] || {}).id || "__nueva";
+  $("fp-cat").innerHTML = opcionesCategorias(p ? p.categoria : primeraConPrecio);
+  $("fp-cat-nombre").value = "";
+  $("fp-precio").value = p && p.precio ? p.precio : "";
+  $("fp-gustos").value = p && p.gustos ? p.gustos : "";
+  $("fp-detalle").value = p && p.detalle ? p.detalle : "";
+  $("fp-color").value = p && /^#[0-9a-f]{6}$/i.test(p.color || "") ? p.color : "#F1DFB8";
+  $("fp-textura").value = p ? p.textura || "" : "";
+  $("fp-hay").checked = p ? p.hay !== false : true;
+  $("fp-err").innerHTML = "";
+  $("fp-borrar").hidden = !p;
+  $("fp-borrar").dataset.armado = ""; $("fp-borrar").textContent = "Borrar";
+  ajustarCampos();
+  $("f-prod").hidden = false;
+  $("f-prod").scrollIntoView({ behavior: "smooth", block: "start" });
+  $("fp-nombre").focus({ preventScroll: true });
+}
+$("btn-nuevo").addEventListener("click", () => abrirForm(null));
+$("lista-prod").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-editar]");
+  if (b) abrirForm(menu.productos.find((p) => p.id === b.dataset.editar));
+});
+$("fp-cat").addEventListener("change", ajustarCampos);
+$("fp-nueva").addEventListener("change", ajustarCampos);
+$("fp-cancelar").addEventListener("click", () => { $("f-prod").hidden = true; editId = null; });
+
+$("f-prod").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const errs = [];
+  const nombre = $("fp-nombre").value.trim();
+  const catSel = $("fp-cat").value;
+  const tipo = tipoElegido();
+  const nombreCat = $("fp-cat-nombre").value.trim();
+  const precio = soloNumero($("fp-precio").value);
+  const ng = soloNumero($("fp-gustos").value);
+  if (!nombre) errs.push("Poné el nombre.");
+  if (catSel === "__nueva" && !nombreCat) errs.push("Poné el nombre de la categoría nueva.");
+  if (tipo !== "gustos" && !precio) errs.push("Poné el precio.");
+  if (tipo === "potes" && !ng) errs.push("Poné cuántos gustos entran.");
+  if (errs.length) { $("fp-err").innerHTML = errs.map((x) => `<li>${esc(x)}</li>`).join(""); return; }
+  const color = $("fp-color").value, textura = $("fp-textura").value, hay = $("fp-hay").checked;
+  const detalle = $("fp-detalle").value.trim();
+  $("fp-guardar").disabled = true;
+  const ok = await guardarMenu((m) => {
+    let catId = catSel;
+    if (catSel === "__nueva") {
+      catId = slug(nombreCat) || "cat";
+      if (m.categorias.some((c) => c.id === catId)) catId += "-" + nuevoId().slice(0, 4);
+      m.categorias.push({ id: catId, nombre: nombreCat, tipo });
+    }
+    const datos = { nombre, categoria: catId, hay };
+    if (tipo !== "gustos") datos.precio = precio;
+    if (tipo === "potes") datos.gustos = ng;
+    if (tipo === "productos") datos.detalle = detalle;
+    let p = editId ? m.productos.find((x) => x.id === editId) : null;
+    if (tipo === "gustos") {
+      datos.color = color; datos.textura = textura;
+      datos.s = p && p.color === color && p.textura === textura && p.s ? p.s : (textura ? colorTextura(color) : "");
+    }
+    if (p) {
+      ["precio", "gustos", "detalle", "color", "textura", "s"].forEach((k) => { delete p[k]; });
+      Object.assign(p, datos);
+    } else {
+      m.productos.push({ id: nuevoId(), ...datos });
+    }
+  }, editId ? "Cambios guardados" : `Agregado: ${nombre}`);
+  $("fp-guardar").disabled = false;
+  if (ok) { $("f-prod").hidden = true; editId = null; }
+});
+
+$("fp-borrar").addEventListener("click", async (e) => {
+  if (!editId || !dobleToque(e.target, "¿Borrar? Tocá de nuevo")) return;
+  const id = editId;
+  const ok = await guardarMenu((m) => { m.productos = m.productos.filter((p) => p.id !== id); }, "Producto borrado");
+  if (ok) { $("f-prod").hidden = true; editId = null; }
+});
+
+/* =====================================================================
+   AJUSTES
+   ===================================================================== */
+function pintarAjustes() {
+  $("a-alias").value = menu.alias || "";
+  $("a-titular").value = menu.titular || "";
+  $("a-pausado").checked = !!menu.pausado;
+  $("a-mensaje").value = menu.mensajePausa || "";
+}
+$("f-ajustes").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const alias = $("a-alias").value.trim(), titular = $("a-titular").value.trim();
+  const pausado = $("a-pausado").checked, mensajePausa = $("a-mensaje").value.trim();
+  await guardarMenu((m) => { Object.assign(m, { alias, titular, pausado, mensajePausa }); },
+    pausado ? "Guardado. Los pedidos por la página están en pausa." : "Ajustes guardados");
+});
+$("btn-reiniciar").addEventListener("click", (e) => {
+  if (!api.reiniciar || !dobleToque(e.target, "¿Seguro? Tocá de nuevo")) return;
+  api.reiniciar();
+  menu = clonar(MENU_INICIAL); menuEnBase = false;
+  pintarProductos(); pintarMostrador(); pintarAjustes();
+  toast("Datos de prueba borrados");
+});
+
+arrancar();
+</script>
+</body>
+</html>

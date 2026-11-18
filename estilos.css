@@ -1,0 +1,142 @@
+/* Heladería Juani · estilos compartidos por la tienda y el panel.
+   Idea de diseño: el pizarrón negro y crema del logo arriba; abajo todo sobrio
+   para que lo que se vea sea el helado (y, en el panel, los números). */
+:root {
+  --bg: #F3F5F4;
+  --surface: #FFFFFF;
+  --ink: #2A1912;
+  --muted: #6C5D57;
+  --line: #E2E0DD;
+  --accent: #D6345A;
+  --accent-ink: #FFFFFF;
+  --ok: #1F8A4C;
+  --steel-a: #DCE1E3;
+  --steel-b: #B4BCC0;
+  /* Colores de la marca: iguales en tema claro y oscuro */
+  --marca-bg: #15110E;
+  --marca-ink: #F4E8D8;
+  --marca-muted: #CBB9A5;
+  --font-display: "Bagel Fat One", "Arial Rounded MT Bold", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", "Segoe UI", Roboto, system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1A1311;
+    --surface: #251B18;
+    --ink: #F4EAE4;
+    --muted: #B8A9A2;
+    --line: #3A2D29;
+    --accent: #FF6585;
+    --accent-ink: #2A0A12;
+    --ok: #4CC47E;
+    --steel-a: #5A6063;
+    --steel-b: #3B4043;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1A1311;
+  --surface: #251B18;
+  --ink: #F4EAE4;
+  --muted: #B8A9A2;
+  --line: #3A2D29;
+  --accent: #FF6585;
+  --accent-ink: #2A0A12;
+  --ok: #4CC47E;
+  --steel-a: #5A6063;
+  --steel-b: #3B4043;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.num-tab { font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+@media (max-width: 420px) { .wrap { padding: 0 16px; } }
+
+/* ---------- Banda de la marca ---------- */
+header.top {
+  background: var(--marca-bg); color: var(--marca-ink);
+  padding: 22px 0 20px; border-bottom: 1px solid #2E2520;
+}
+.cabecera { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px 20px; align-items: center; }
+.logo { width: 112px; height: 112px; display: block; }
+@media (min-width: 760px) { .logo { width: 150px; height: 150px; } }
+.marca {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 7vw, 3.6rem);
+  line-height: .95;
+  letter-spacing: -.01em;
+}
+.bajada { margin-top: 8px; color: var(--marca-muted); font-size: 1.05rem; max-width: 46ch; }
+.chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .16);
+  font-size: .9rem; color: var(--marca-ink);
+}
+.chip a { color: inherit; text-underline-offset: 3px; }
+.punto { width: 9px; height: 9px; border-radius: 50%; background: var(--marca-muted); flex: none; }
+.chip.abierto .punto { background: #4CC47E; }
+.chip.abierto { border-color: rgba(76, 196, 126, .55); }
+.chip.cerrado .punto { background: #FF6585; }
+
+/* ---------- Botones y formularios ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 18px; border-radius: 12px; border: 0;
+  font-weight: 700; cursor: pointer; text-decoration: none;
+  background: var(--accent); color: var(--accent-ink);
+}
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.btn.grande { width: 100%; padding: 15px 18px; font-size: 1.05rem; }
+.btn.suave { background: transparent; color: inherit; border: 1px solid currentColor; }
+.btn.oscuro { background: var(--ink); color: var(--bg); }
+.btn.chico { padding: 8px 12px; font-size: .9rem; border-radius: 10px; }
+
+.form { display: grid; gap: 12px; }
+.campo { display: grid; gap: 5px; }
+.campo label, .campo legend, .campo .etiqueta { font-weight: 600; font-size: .92rem; }
+.campo input:not([type="checkbox"]):not([type="radio"]):not([type="color"]), .campo select, .campo textarea {
+  width: 100%; padding: 11px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--bg);
+}
+.campo textarea { min-height: 64px; resize: vertical; }
+.campo [aria-invalid="true"] { border-color: var(--accent) !important; }
+.campo .ayuda { color: var(--muted); font-size: .85rem; }
+fieldset.campo { border: 0; padding: 0; margin: 0; min-width: 0; }
+.segmento { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; padding: 4px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); }
+.segmento label { position: relative; }
+.segmento input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.segmento span { display: block; text-align: center; padding: 9px 8px; border-radius: 9px; font-weight: 600; font-size: .95rem; cursor: pointer; }
+.segmento input:checked + span { background: var(--surface); box-shadow: 0 1px 3px rgba(0, 0, 0, .15); }
+.segmento input:focus-visible + span { outline: 3px solid var(--accent); }
+
+.errores { margin: 0; padding: 0; list-style: none; color: var(--accent); font-weight: 600; font-size: .92rem; display: grid; gap: 2px; }
+.nota { font-size: .88rem; color: var(--muted); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 20;
+  background: var(--ink); color: var(--bg); padding: 11px 16px; border-radius: 12px;
+  font-weight: 600; box-shadow: 0 6px 24px rgba(0, 0, 0, .25); max-width: calc(100% - 32px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
