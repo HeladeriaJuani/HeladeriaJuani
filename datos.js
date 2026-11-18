@@ -20,6 +20,11 @@ export const firebaseConfig = {
   measurementId: "G-BDFCHYC7JX"
 };
 
+// ID de la base de Firestore. La de este proyecto se creó con el ID "default"
+// (sin paréntesis), que NO es la base estándar "(default)". Si algún día la
+// recreás dejando el ID estándar, poné acá "(default)".
+export const ID_BASE = "default";
+
 // Cuentas que pueden entrar al panel (UID de Firebase → Authentication → Usuarios).
 // Si agregás una cuenta nueva, sumá su UID acá Y en firestore.rules.
 export const ADMINS = [
@@ -290,7 +295,7 @@ async function crearFirebase() {
     runTransaction, serverTimestamp, increment, writeBatch, documentId, getDocs, Timestamp
   } = fs;
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const db = ID_BASE && ID_BASE !== "(default)" ? getFirestore(app, ID_BASE) : getFirestore(app);
   const refMenu = doc(db, "tienda", "menu");
   let au = null, auth = null;
 
