@@ -255,6 +255,21 @@ export { sumarDeltas };
 /* =====================================================================
    Conexión: Firebase si está configurado, si no, modo prueba
    ===================================================================== */
+/** Traduce un error de Firebase a algo entendible, para saber qué revisar */
+export function explicarError(e) {
+  const code = String((e && (e.code || e.name)) || "");
+  const msg = String((e && e.message) || e || "");
+  if (code === "permission-denied" || /insufficient permissions/i.test(msg))
+    return { codigo: "permission-denied", ayuda: "Firestore rechazó la lectura: faltan publicar las reglas de firestore.rules (Firestore → Reglas → Publicar)." };
+  if (/does not exist/i.test(msg) || code === "not-found")
+    return { codigo: "base-inexistente", ayuda: "No existe la base de Firestore, o tiene otro ID. Tiene que ser Firestore (no Realtime Database) con el ID (default)." };
+  if (/dynamically imported module|Importing a module script failed|Failed to fetch/i.test(msg))
+    return { codigo: "sin-firebase", ayuda: "El navegador no pudo descargar Firebase: sin internet o un bloqueador de anuncios." };
+  if (code === "unavailable" || /offline/i.test(msg))
+    return { codigo: "sin-conexion", ayuda: "No hubo respuesta de Firestore: sin internet, o la base de Firestore todavía no está creada." };
+  return { codigo: code || "desconocido", ayuda: msg.slice(0, 220) };
+}
+
 const VERSION_FIREBASE = "12.12.0";
 const urlFB = (m) => `https://www.gstatic.com/firebasejs/${VERSION_FIREBASE}/firebase-${m}.js`;
 

@@ -307,7 +307,7 @@ header.top { padding: 12px 0; }
 <script type="module">
 import {
   CONFIG, MENU_INICIAL, TIPOS_CATEGORIA, conectar, clonar, fmt, esc, soloNumero, slug, nuevoId,
-  claveDia, sumarDias, diaSemana, horaAR, sumarDeltas, colorTextura
+  claveDia, sumarDias, diaSemana, horaAR, sumarDeltas, colorTextura, explicarError
 } from "./datos.js";
 
 const $ = (id) => document.getElementById(id);
@@ -347,7 +347,8 @@ const tipoDe = (p) => (catDe(p.categoria) || {}).tipo;
 async function arrancar() {
   api = await conectar();
   if (api.modo === "error") {
-    $("error-txt").textContent = "No se pudo conectar con Firebase. Revisá la conexión a internet y los datos de firebaseConfig en datos.js.";
+    const x = explicarError(api.error);
+    $("error-txt").textContent = `No se pudo conectar con Firebase (${x.codigo}). ${x.ayuda}`;
     return mostrar("v-error");
   }
   $("aviso-prueba").hidden = api.modo !== "prueba";
@@ -374,7 +375,8 @@ async function alCambiarSesion(s) {
     menu = m || clonar(MENU_INICIAL);
   } catch (e) {
     console.error(e);
-    $("error-txt").textContent = "No se pudo leer el menú. Si recién creaste la base, revisá que hayas publicado las reglas.";
+    const x = explicarError(e);
+    $("error-txt").textContent = `No se pudo leer el menú (${x.codigo}). ${x.ayuda}`;
     return mostrar("v-error");
   }
   mostrar("v-panel");

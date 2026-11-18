@@ -26,6 +26,7 @@
   font-weight: 600;
 }
 .banner a { color: inherit; }
+.banner .detalle { display: block; margin-top: 8px; font-weight: 500; font-size: .82rem; color: var(--muted); }
 .paso { display: grid; gap: 14px; }
 .paso + .paso { margin-top: 30px; }
 .paso-tit { display: flex; align-items: baseline; gap: 10px; }
@@ -282,7 +283,7 @@ footer a { color: var(--ink); }
 <script type="module">
 import {
   CONFIG, MENU_INICIAL, conectar, clonar, fmt, esc, soloNumero, textoPeso,
-  estadoLocal, ahoraAR, DIAS, DIAS_LINDOS
+  estadoLocal, ahoraAR, DIAS, DIAS_LINDOS, explicarError
 } from "./datos.js";
 
 const $ = (id) => document.getElementById(id);
@@ -390,7 +391,9 @@ function pintarEncabezado() {
 function pintarAvisos() {
   let html = "";
   if (api.modo === "error") {
-    html = `<div class="banner" role="alert">No pudimos cargar el menú en este momento. Pedí directo por <a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp al ${esc(CONFIG.whatsappTexto)}</a>.</div>`;
+    const x = explicarError(api.error);
+    html = `<div class="banner" role="alert">No pudimos cargar el menú en este momento. Pedí directo por <a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp al ${esc(CONFIG.whatsappTexto)}</a>.
+      <small class="detalle">Detalle para el dueño de la página: ${esc(x.codigo)}. ${esc(x.ayuda)}</small></div>`;
   } else if (menu && menu.pausado) {
     html = `<div class="banner" role="status">${esc(menu.mensajePausa || "Por ahora no estamos tomando pedidos por la página.")} Podés escribirnos por <a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp</a>.</div>`;
   }
@@ -659,7 +662,7 @@ async function arrancar() {
     menu = (await api.leerMenu()) || clonar(MENU_INICIAL);
   } catch (e) {
     console.error(e);
-    api = { modo: "error" }; $("cargando").hidden = true; pintarAvisos(); return;
+    api = { modo: "error", error: e }; $("cargando").hidden = true; pintarAvisos(); return;
   }
   const disp = potesDisponibles();
   state.tamano = disp.length ? disp[disp.length - 1].id : null;
